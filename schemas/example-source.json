@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "id": "example-manga-en",
+  "name": "Example Manga",
+  "lang": "en",
+  "contentType": "image",
+  "baseUrl": "https://example-manga.test",
+  "version": "1.0.0",
+
+  "request": {
+    "headers": { "Referer": "https://example-manga.test/" },
+    "useWebView": false
+  },
+
+  "popular": {
+    "urlTemplate": "https://example-manga.test/popular?page={page}",
+    "listSelector": "div.series-card",
+    "nextPageSelector": "a.next-page",
+    "item": {
+      "id":    { "selector": "a.cover", "attr": "href", "resolveUrl": true },
+      "title": { "selector": "h3.title" },
+      "cover": { "selector": "img.thumb", "attr": "data-src", "resolveUrl": true }
+    }
+  },
+
+  "search": {
+    "urlTemplate": "https://example-manga.test/search?q={query}&page={page}",
+    "listSelector": "div.series-card",
+    "nextPageSelector": "a.next-page",
+    "item": {
+      "id":    { "selector": "a.cover", "attr": "href", "resolveUrl": true },
+      "title": { "selector": "h3.title" },
+      "cover": { "selector": "img.thumb", "attr": "data-src", "resolveUrl": true }
+    }
+  },
+
+  "details": {
+    "fields": {
+      "title":       { "selector": "h1.series-title" },
+      "cover":       { "selector": "img.series-cover", "attr": "src", "resolveUrl": true },
+      "authors":     { "selector": "span.author", "separator": "," },
+      "description": { "selector": "div.summary" },
+      "genres":      { "selector": "a.genre-tag" },
+      "status":      { "selector": "span.status" }
+    }
+  },
+
+  "chapters": {
+    "listSelector": "ul.chapter-list li a",
+    "item": {
+      "id":          { "attr": "href", "resolveUrl": true },
+      "title":       { "selector": "span.ch-name" },
+      "number":      { "selector": "span.ch-name", "regex": "Chapter\\s+([0-9.]+)" },
+      "publishedAt": { "selector": "time", "attr": "datetime" }
+    }
+  },
+
+  "content": {
+    "type": "image",
+    "pageImageSelector": "div.reader-page img",
+    "pageImageAttr": "data-src"
+  }
+}
