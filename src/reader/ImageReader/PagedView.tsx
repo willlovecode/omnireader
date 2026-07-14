@@ -1,16 +1,27 @@
-import { FlashList, type ViewToken } from '@shopify/flash-list';
+import { FlashList, type FlashListRef, type ViewToken } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { useCallback, useMemo } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
+
+import type { PageViewHandle } from './types';
 
 interface Props {
   pages: string[];
   currentIndex: number;
   onIndexChange: (index: number) => void;
+  headers?: Record<string, string>;
 }
 
-export function PagedView({ pages, currentIndex, onIndexChange }: Props) {
-  const { width, height } = useWindowDimensions();
+export const PagedView = forwardRef<PageViewHandle, Props>(function PagedView(
+  { pages, currentIndex, onIndexChange, headers },
+  ref,
+) {
+  const { width } = useWindowDimensions();
+  const listRef = useRef<FlashListRef<string>>(null);
+
+  useImperativeHandle(ref, () => ({
+    scrollToIndex: (index) => listRef.current?.scrollToIndex({ index, animated: false }),
+  }));
 
   const viewabilityConfig = useMemo(() => ({ itemVisiblePercentThreshold: 60 }), []);
 
@@ -26,6 +37,8 @@ export function PagedView({ pages, currentIndex, onIndexChange }: Props) {
 
   return (
     <FlashList
+      ref={listRef}
+      style={styles.list}
       data={pages}
       horizontal
       pagingEnabled
@@ -34,14 +47,18 @@ export function PagedView({ pages, currentIndex, onIndexChange }: Props) {
       viewabilityConfig={viewabilityConfig}
       onViewableItemsChanged={handleViewableItemsChanged}
       renderItem={({ item }) => (
-        <View style={{ width, height }}>
-          <Image source={{ uri: item }} style={styles.page} contentFit="contain" />
+        // height: '100%' fills whatever space the list actually has (between
+        // the reader's header/footer) — NOT the raw device height, which
+        // used to overflow past the header/footer and push them off-screen.
+        <View style={{ width, height: '100%' }}>
+          <Image source={{ uri: item, headers }} recyclingKey={item} style={styles.page} contentFit="contain" />
         </View>
       )}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
+  list: { flex: 1 },
   page: { width: '100%', height: '100%' },
 });

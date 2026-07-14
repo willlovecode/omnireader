@@ -52,8 +52,14 @@ export interface Chapter {
  * Discriminated union so image and text sources share one method signature.
  */
 export type ChapterContent =
-  | { contentType: 'image'; pages: string[] } // ordered list of page image URLs
-  | { contentType: 'text'; html: string };    // sanitized chapter body as HTML
+  | {
+      contentType: 'image';
+      pages: string[]; // ordered list of page image URLs
+      /** Extra headers (e.g. Referer) the reader must send when loading
+       *  `pages` — some sites hotlink-protect their image CDN. */
+      headers?: Record<string, string>;
+    }
+  | { contentType: 'text'; html: string }; // sanitized chapter body as HTML
 
 /** Paged results, for catalogs/search that support pagination. */
 export interface Page<T> {
