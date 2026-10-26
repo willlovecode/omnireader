@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local debug and design reference images
+assets/debug/
+assets/example-design/
